@@ -18,7 +18,7 @@ class HUSFORMERModel(nn.Module):
         self.attn_mask = hyp_params.attn_mask
 
         combined_dim = 30     
-        output_dim = hyp_params.output_dim        
+        output_dim = hyp_params.num_classes      
         self.channels = hyp_params.m1_len+hyp_params.m2_len+hyp_params.m3_len+hyp_params.m4_len
         
         # 1. Temporal convolutional layers
@@ -39,6 +39,7 @@ class HUSFORMERModel(nn.Module):
         
         # 4. Projection layers
         self.proj1 = self.proj2 = nn.Linear(combined_dim, combined_dim)
+        print("OUTPUT_DIM", output_dim)
         self.out_layer = nn.Linear(combined_dim, output_dim)
 
     def get_network(self, self_type='l', layers=-1):
@@ -84,5 +85,6 @@ class HUSFORMERModel(nn.Module):
         last_hs = self.final_conv(last_hs2).squeeze(1)
 
         output = self.out_layer(last_hs)
+        print("Output shape",output.shape)
 
         return output, last_hs

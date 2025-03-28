@@ -12,7 +12,7 @@ def get_data(args, dataset, split='train'):
         torch.save(data, data_path)
     else:
         print(f"  - Found cached {split} data")
-        data = torch.load(data_path, weights_only = False)
+        data = torch.load(data_path)
     return data
 
 
@@ -44,10 +44,17 @@ def remake_label(target):
     Returns:
         Tensor: The processed target labels.
     """
+    # if isinstance(target, torch.Tensor):
+    #     return target.view(-1)  # Flatten the tensor if needed
+    # else:
+    #     return torch.tensor(target).view(-1)  # Convert list/array to tensor
     if isinstance(target, torch.Tensor):
-        return target.view(-1)  # Flatten the tensor if needed
+        target = target.view(-1)  # Flatten the tensor
     else:
-        return torch.tensor(target).view(-1)  # Convert list/array to tensor
+        target = torch.tensor(target).view(-1)  # Convert list/array to tensor
+
+    target = torch.clamp(target, min=0)  # Ensure no negative indices
+    return target
 
 
 class focalloss(nn.Module):
