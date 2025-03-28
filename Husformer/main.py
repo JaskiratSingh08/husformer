@@ -1,5 +1,6 @@
 import torch
 import argparse
+import numpy as np
 from src.utils import *
 from torch.utils.data import DataLoader
 from src import train
@@ -109,6 +110,14 @@ hyp_params.batch_chunk = args.batch_chunk
 hyp_params.n_train, hyp_params.n_valid, hyp_params.n_test = len(train_data), len(valid_data), len(test_data)
 hyp_params.model = str.upper(args.model.strip())
 hyp_params.output_dim = output_dim_dict.get(dataset, 1)
+
+# Extract labels from the train dataset
+train_labels = np.array(train_data.labels)  # Ensure 'labels' exist in train_data
+
+# Compute the number of unique classes dynamically
+hyp_params.num_classes = len(np.unique(train_labels))
+
+print(f"Number of unique classes detected: {hyp_params.num_classes}")
 
 if __name__ == '__main__':
     if args.eval:
